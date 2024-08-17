@@ -3,9 +3,10 @@ const authState = ref<"login" | "signup">("login");
 const authError = ref("");
 const showConfirmEmailMessage = ref(false);
 const input = reactive({
-  password: "",
-  email: "",
+  password: null,
+  email: null,
 });
+
 const router = useRouter();
 
 const { signUp, signIn, user, signOut } = useAuth();
@@ -25,8 +26,8 @@ const handleSubmit = async () => {
       await signUp({ email: input.email, password: input.password });
       showConfirmEmailMessage.value = true;
     }
-    input.email = "";
-    input.password = "";
+    input.email = null;
+    input.password = null;
   } catch (err) {
     authError.value = err.message;
   }

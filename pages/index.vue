@@ -6,13 +6,14 @@ const { supabase } = useSupabase();
   <div>
     <div class="container">
       <AuthCard />
+
     </div>
   </div>
 </template>
 
 <style scoped>
 .container {
-  max-width: 50%;
+  max-width: 55%;
   margin: 0 auto;
   display: flex;
   justify-content: center;
