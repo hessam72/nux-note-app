@@ -23,32 +23,16 @@ bool sameDay(DateTime a, DateTime b) => a.year == b.year && a.month == b.month &
 void main() => runApp(const App());
 
 class Event {
-  Event({String? id, required this.title, this.note = '', this.room = '', this.person = '', required this.start, required this.end})
-      : id = id ?? DateTime.now().microsecondsSinceEpoch.toString();
+  Event({String? id, required this.title, this.note = '', this.room = '', this.person = '', required this.start, required this.end}) : id = id ?? DateTime.now().microsecondsSinceEpoch.toString();
 
   final String id;
   final String title, note, room, person;
   final DateTime start, end;
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'note': note,
-        'room': room,
-        'person': person,
-        'start': start.toIso8601String(),
-        'end': end.toIso8601String(),
-      };
+  Map<String, dynamic> toJson() => {'id': id, 'title': title, 'note': note, 'room': room, 'person': person, 'start': start.toIso8601String(), 'end': end.toIso8601String()};
 
-  factory Event.fromJson(Map<String, dynamic> j) => Event(
-        id: j['id'],
-        title: j['title'],
-        note: j['note'] ?? '',
-        room: j['room'] ?? '',
-        person: j['person'] ?? '',
-        start: DateTime.parse(j['start']),
-        end: DateTime.parse(j['end']),
-      );
+  factory Event.fromJson(Map<String, dynamic> j) =>
+      Event(id: j['id'], title: j['title'], note: j['note'] ?? '', room: j['room'] ?? '', person: j['person'] ?? '', start: DateTime.parse(j['start']), end: DateTime.parse(j['end']));
 }
 
 class Store extends ChangeNotifier {
@@ -91,15 +75,15 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'Nux Scheduler',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: kOrange),
-          scaffoldBackgroundColor: Colors.white,
-        ),
-        home: const Shell(),
-      );
+    title: 'Nux Scheduler',
+    debugShowCheckedModeBanner: false,
+    theme: ThemeData(
+      useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(seedColor: kOrange),
+      scaffoldBackgroundColor: Colors.white,
+    ),
+    home: const Shell(),
+  );
 }
 
 class Shell extends StatefulWidget {
@@ -136,28 +120,18 @@ class _ShellState extends State<Shell> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: ListenableBuilder(
-          listenable: store,
-          builder: (_, _) => tab == 0
-              ? HomePage(store, onEdit: edit)
-              : SchedulePage(store, day: day, onDay: (d) => setState(() => day = d), onEdit: edit),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => edit(),
-          backgroundColor: kOrange,
-          foregroundColor: Colors.white,
-          child: const Icon(Icons.add),
-        ),
-        bottomNavigationBar: SafeArea(
-          child: SizedBox(
-            height: 64,
-            child: Row(children: [
-              _NavItem(Icons.home_outlined, tab == 0, () => setState(() => tab = 0)),
-              _NavItem(Icons.calendar_month_outlined, tab == 1, () => setState(() => tab = 1)),
-            ]),
-          ),
-        ),
-      );
+    body: ListenableBuilder(
+      listenable: store,
+      builder: (_, _) => tab == 0 ? HomePage(store, onEdit: edit) : SchedulePage(store, day: day, onDay: (d) => setState(() => day = d), onEdit: edit),
+    ),
+    floatingActionButton: FloatingActionButton(onPressed: () => edit(), backgroundColor: kOrange, foregroundColor: Colors.white, child: const Icon(Icons.add)),
+    bottomNavigationBar: SafeArea(
+      child: SizedBox(
+        height: 64,
+        child: Row(children: [_NavItem(Icons.home_outlined, tab == 0, () => setState(() => tab = 0)), _NavItem(Icons.calendar_month_outlined, tab == 1, () => setState(() => tab = 1))]),
+      ),
+    ),
+  );
 }
 
 class _NavItem extends StatelessWidget {
@@ -168,15 +142,18 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Expanded(
-        child: InkWell(
-          onTap: onTap,
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Icon(icon, size: 28, color: selected ? kOrange : kMuted),
-            const SizedBox(height: 4),
-            CircleAvatar(radius: 2.5, backgroundColor: selected ? kOrange : Colors.transparent),
-          ]),
-        ),
-      );
+    child: InkWell(
+      onTap: onTap,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 28, color: selected ? kOrange : kMuted),
+          const SizedBox(height: 4),
+          CircleAvatar(radius: 2.5, backgroundColor: selected ? kOrange : Colors.transparent),
+        ],
+      ),
+    ),
+  );
 }
 
 class HomePage extends StatelessWidget {
@@ -200,56 +177,75 @@ class HomePage extends StatelessWidget {
       color: kDark,
       child: SafeArea(
         bottom: false,
-        child: Column(children: [
-          SizedBox(
-            height: 190,
-            child: Stack(children: [
-              Positioned(right: 16, top: 10, child: Icon(Icons.public, size: 150, color: kGreen.withValues(alpha: .6))),
-              Positioned(
-                left: 24,
-                top: 32,
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Text('Hello!', style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  Text(
-                    today == 0 ? 'Nothing planned today' : '$today event${today == 1 ? '' : 's'} today',
-                    style: const TextStyle(color: Colors.white70, fontSize: 15),
-                  ),
-                ]),
-              ),
-            ]),
-          ),
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(32))),
-              child: ListView(padding: const EdgeInsets.only(top: 28, bottom: 90), children: [
-                const _Heading('Subjects', 'Recommendations for you'),
-                SizedBox(
-                  height: 137,
-                  child: names.isEmpty
-                      ? const Padding(padding: EdgeInsets.symmetric(horizontal: 24), child: Text('Add an event with + to see your subjects here.', style: TextStyle(color: kMuted)))
-                      : ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          itemCount: names.length,
-                          separatorBuilder: (_, _) => const SizedBox(width: 12),
-                          itemBuilder: (_, i) => _SubjectCard(names[i], subjects[names[i]]!, palette[i % palette.length]),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 190,
+              child: Stack(
+                children: [
+                  Positioned(right: 16, top: 10, child: Icon(Icons.public, size: 150, color: kGreen.withValues(alpha: .6))),
+                  Positioned(
+                    left: 24,
+                    top: 32,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Hello!',
+                          style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
                         ),
-                ),
-                const SizedBox(height: 28),
-                const _Heading('Your Schedule', 'Next lessons'),
-                if (next.isEmpty)
-                  const Padding(padding: EdgeInsets.symmetric(horizontal: 24), child: Text('No upcoming events.', style: TextStyle(color: kMuted))),
-                for (var i = 0; i < next.length; i++)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
-                    child: EventCard(next[i], hot: i == 0, showWhen: true, onEdit: () => onEdit(next[i]), onDelete: () => store.remove(next[i])),
+                        const SizedBox(height: 4),
+                        Text(today == 0 ? 'Nothing planned today' : '$today event${today == 1 ? '' : 's'} today', style: const TextStyle(color: Colors.white70, fontSize: 15)),
+                      ],
+                    ),
                   ),
-              ]),
+                ],
+              ),
             ),
-          ),
-        ]),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+                ),
+                child: ListView(
+                  padding: const EdgeInsets.only(top: 28, bottom: 90),
+                  children: [
+                    const _Heading('Subjects', 'Recommendations for you'),
+                    SizedBox(
+                      height: 137,
+                      child: names.isEmpty
+                          ? const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 24),
+                              child: Text('Add an event with + to see your subjects here.', style: TextStyle(color: kMuted)),
+                            )
+                          : ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.symmetric(horizontal: 24),
+                              itemCount: names.length,
+                              separatorBuilder: (_, _) => const SizedBox(width: 12),
+                              itemBuilder: (_, i) => _SubjectCard(names[i], subjects[names[i]]!, palette[i % palette.length]),
+                            ),
+                    ),
+                    const SizedBox(height: 28),
+                    const _Heading('Your Schedule', 'Next lessons'),
+                    if (next.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24),
+                        child: Text('No upcoming events.', style: TextStyle(color: kMuted)),
+                      ),
+                    for (var i = 0; i < next.length; i++)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+                        child: EventCard(next[i], hot: i == 0, showWhen: true, onEdit: () => onEdit(next[i]), onDelete: () => store.remove(next[i])),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -261,12 +257,18 @@ class _Heading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(24, 0, 24, 14),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(title, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: kInk)),
-          Text(sub, style: const TextStyle(fontSize: 15, color: kMuted)),
-        ]),
-      );
+    padding: const EdgeInsets.fromLTRB(24, 0, 24, 14),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: kInk),
+        ),
+        Text(sub, style: const TextStyle(fontSize: 15, color: kMuted)),
+      ],
+    ),
+  );
 }
 
 class _SubjectCard extends StatelessWidget {
@@ -277,24 +279,34 @@ class _SubjectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: 170,
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(color: colors.$1, borderRadius: BorderRadius.circular(20)),
-        child: Stack(children: [
-          Positioned(right: -24, top: -24, child: CircleAvatar(radius: 52, backgroundColor: colors.$2)),
-          const Positioned(right: 8, top: 10, child: Icon(Icons.more_vert, color: Colors.white, size: 20)),
-          const Positioned(left: 18, top: 18, child: Icon(Icons.menu_book_rounded, color: Colors.white)),
-          Positioned(
-            left: 18,
-            right: 12,
-            bottom: 16,
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
+    width: 170,
+    clipBehavior: Clip.antiAlias,
+    decoration: BoxDecoration(color: colors.$1, borderRadius: BorderRadius.circular(20)),
+    child: Stack(
+      children: [
+        Positioned(right: -24, top: -24, child: CircleAvatar(radius: 52, backgroundColor: colors.$2)),
+        const Positioned(right: 8, top: 10, child: Icon(Icons.more_vert, color: Colors.white, size: 20)),
+        const Positioned(left: 18, top: 18, child: Icon(Icons.menu_book_rounded, color: Colors.white)),
+        Positioned(
+          left: 18,
+          right: 12,
+          bottom: 16,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+              ),
               Text('$count lesson${count == 1 ? '' : 's'}', style: const TextStyle(color: Colors.white70, fontSize: 12)),
-            ]),
+            ],
           ),
-        ]),
-      );
+        ),
+      ],
+    ),
+  );
 }
 
 class SchedulePage extends StatelessWidget {
@@ -312,87 +324,122 @@ class SchedulePage extends StatelessWidget {
     final hot = items.indexWhere((e) => e.end.isAfter(now));
 
     return SafeArea(
-      child: Column(children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
-          child: Row(children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () async {
-                  final d = await showDatePicker(context: context, initialDate: day, firstDate: DateTime(2000), lastDate: DateTime(2100));
-                  if (d != null) onDay(d);
-                },
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Row(children: [
-                    Text('${day.day}', style: const TextStyle(fontSize: 56, fontWeight: FontWeight.bold, color: kInk, height: 1)),
-                    const SizedBox(width: 12),
-                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(_weekdays[day.weekday % 7], style: const TextStyle(fontSize: 16, color: kMuted)),
-                      Text('${_months[day.month - 1]} ${day.year}', style: const TextStyle(fontSize: 16, color: kMuted)),
-                    ]),
-                  ]),
-                ),
-              ),
-            ),
-            Material(
-              color: kGreen.withValues(alpha: .15),
-              borderRadius: BorderRadius.circular(12),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () => onDay(DateTime.now()),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                  child: Text('Today', style: TextStyle(color: kGreen, fontSize: 18, fontWeight: FontWeight.w600)),
-                ),
-              ),
-            ),
-          ]),
-        ),
-        GestureDetector(
-          onHorizontalDragEnd: (d) {
-            final v = d.primaryVelocity ?? 0;
-            if (v.abs() > 200) onDay(DateTime(day.year, day.month, day.day + (v < 0 ? 7 : -7)));
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(children: [
-              for (var i = 0; i < 7; i++) _weekCell(DateTime(sunday.year, sunday.month, sunday.day + i), i),
-            ]),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.fromLTRB(24, 12, 24, 8),
-          child: Row(children: [
-            SizedBox(width: 64, child: Text('Time', style: TextStyle(color: kMuted, fontSize: 16))),
-            Text('Course', style: TextStyle(color: kMuted, fontSize: 16)),
-          ]),
-        ),
-        Expanded(
-          child: items.isEmpty
-              ? const Center(child: Text('Nothing scheduled.\nTap + to add an event.', textAlign: TextAlign.center, style: TextStyle(color: kMuted, fontSize: 16)))
-              : ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 100),
-                  itemCount: items.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 14),
-                  itemBuilder: (_, i) => Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    SizedBox(
-                      width: 64,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text(hm(items[i].start), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: kInk)),
-                          const SizedBox(height: 6),
-                          Text(hm(items[i].end), style: const TextStyle(fontSize: 15, color: kMuted)),
-                        ]),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () async {
+                      final d = await showDatePicker(context: context, initialDate: day, firstDate: DateTime(2000), lastDate: DateTime(2100));
+                      if (d != null) onDay(d);
+                    },
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        children: [
+                          Text(
+                            '${day.day}',
+                            style: const TextStyle(fontSize: 56, fontWeight: FontWeight.bold, color: kInk, height: 1),
+                          ),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(_weekdays[day.weekday % 7], style: const TextStyle(fontSize: 16, color: kMuted)),
+                              Text('${_months[day.month - 1]} ${day.year}', style: const TextStyle(fontSize: 16, color: kMuted)),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    Expanded(child: EventCard(items[i], hot: i == hot, onEdit: () => onEdit(items[i]), onDelete: () => store.remove(items[i]))),
-                  ]),
+                  ),
                 ),
-        ),
-      ]),
+                Material(
+                  color: kGreen.withValues(alpha: .15),
+                  borderRadius: BorderRadius.circular(12),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () => onDay(DateTime.now()),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                      child: Text(
+                        'Today',
+                        style: TextStyle(color: kGreen, fontSize: 18, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onHorizontalDragEnd: (d) {
+              final v = d.primaryVelocity ?? 0;
+              if (v.abs() > 200) onDay(DateTime(day.year, day.month, day.day + (v < 0 ? 7 : -7)));
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(children: [for (var i = 0; i < 7; i++) _weekCell(DateTime(sunday.year, sunday.month, sunday.day + i), i)]),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(24, 12, 24, 8),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 64,
+                  child: Text('Time', style: TextStyle(color: kMuted, fontSize: 16)),
+                ),
+                Text('Course', style: TextStyle(color: kMuted, fontSize: 16)),
+              ],
+            ),
+          ),
+          Expanded(
+            child: items.isEmpty
+                ? const Center(
+                    child: Text(
+                      'Nothing scheduled.\nTap + to add an event.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: kMuted, fontSize: 16),
+                    ),
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(24, 8, 24, 100),
+                    itemCount: items.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 14),
+                    itemBuilder: (_, i) => Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 64,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  hm(items[i].start),
+                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: kInk),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(hm(items[i].end), style: const TextStyle(fontSize: 15, color: kMuted)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: EventCard(items[i], hot: i == hot, onEdit: () => onEdit(items[i]), onDelete: () => store.remove(items[i])),
+                        ),
+                      ],
+                    ),
+                  ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -406,13 +453,18 @@ class SchedulePage extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(color: selected ? kOrange : null, borderRadius: BorderRadius.circular(14)),
-          child: Column(children: [
-            Text(_letters[i], style: TextStyle(fontSize: 12, color: selected ? Colors.white : kMuted)),
-            const SizedBox(height: 6),
-            Text('${d.day}', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: selected ? Colors.white : kInk)),
-            const SizedBox(height: 4),
-            CircleAvatar(radius: 2, backgroundColor: busy ? (selected ? Colors.white : kGreen) : Colors.transparent),
-          ]),
+          child: Column(
+            children: [
+              Text(_letters[i], style: TextStyle(fontSize: 12, color: selected ? Colors.white : kMuted)),
+              const SizedBox(height: 6),
+              Text(
+                '${d.day}',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: selected ? Colors.white : kInk),
+              ),
+              const SizedBox(height: 4),
+              CircleAvatar(radius: 2, backgroundColor: busy ? (selected ? Colors.white : kGreen) : Colors.transparent),
+            ],
+          ),
         ),
       ),
     );
@@ -429,42 +481,146 @@ class EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final fg = hot ? Colors.white : kInk;
     final icon = hot ? Colors.white : kMuted;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(color: hot ? kGreen : kGrey, borderRadius: BorderRadius.circular(20)),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Expanded(child: Text(e.title, style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600, color: fg))),
-          PopupMenuButton<String>(
-            padding: EdgeInsets.zero,
-            onSelected: (v) => v == 'edit' ? onEdit() : onDelete(),
-            itemBuilder: (_) => const [
-              PopupMenuItem(value: 'edit', child: Text('Edit')),
-              PopupMenuItem(value: 'delete', child: Text('Delete')),
+    return Material(
+      color: hot ? kGreen : kGrey,
+      borderRadius: BorderRadius.circular(20),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => _showDetails(context),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      e.title,
+                      style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600, color: fg),
+                    ),
+                  ),
+                  PopupMenuButton<String>(
+                    padding: EdgeInsets.zero,
+                    onSelected: (v) => v == 'edit' ? onEdit() : onDelete(),
+                    itemBuilder: (_) => const [PopupMenuItem(value: 'edit', child: Text('Edit')), PopupMenuItem(value: 'delete', child: Text('Delete'))],
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(Icons.more_vert, color: fg, size: 20),
+                    ),
+                  ),
+                ],
+              ),
+              if (showWhen) Text('${_weekdays[e.start.weekday % 7]}, ${e.start.day} ${_months[e.start.month - 1]} · ${hm(e.start)}–${hm(e.end)}', style: TextStyle(fontSize: 13, color: fg)),
+              if (e.note.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(e.note, style: TextStyle(fontSize: 14, color: fg)),
+                ),
+              if (e.room.isNotEmpty || e.person.isNotEmpty) const SizedBox(height: 12),
+              if (e.room.isNotEmpty) _Line(Icon(Icons.location_on_outlined, size: 18, color: icon), e.room, fg),
+              if (e.room.isNotEmpty && e.person.isNotEmpty) const SizedBox(height: 8),
+              if (e.person.isNotEmpty)
+                _Line(
+                  CircleAvatar(
+                    radius: 9,
+                    backgroundColor: hot ? Colors.white : kSand,
+                    child: Text(
+                      e.person[0].toUpperCase(),
+                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: hot ? kGreen : kInk),
+                    ),
+                  ),
+                  e.person,
+                  fg,
+                ),
             ],
-            child: Padding(padding: const EdgeInsets.all(4), child: Icon(Icons.more_vert, color: fg, size: 20)),
           ),
-        ]),
-        if (showWhen)
-          Text('${_weekdays[e.start.weekday % 7]}, ${e.start.day} ${_months[e.start.month - 1]} · ${hm(e.start)}–${hm(e.end)}', style: TextStyle(fontSize: 13, color: fg)),
-        if (e.note.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 2), child: Text(e.note, style: TextStyle(fontSize: 14, color: fg))),
-        if (e.room.isNotEmpty || e.person.isNotEmpty) const SizedBox(height: 12),
-        if (e.room.isNotEmpty) _Line(Icon(Icons.location_on_outlined, size: 18, color: icon), e.room, fg),
-        if (e.room.isNotEmpty && e.person.isNotEmpty) const SizedBox(height: 8),
-        if (e.person.isNotEmpty)
-          _Line(
-            CircleAvatar(
-              radius: 9,
-              backgroundColor: hot ? Colors.white : kSand,
-              child: Text(e.person[0].toUpperCase(), style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: hot ? kGreen : kInk)),
-            ),
-            e.person,
-            fg,
-          ),
-      ]),
+        ),
+      ),
     );
   }
+
+  void _showDetails(BuildContext context) {
+    final mins = e.end.difference(e.start).inMinutes;
+    final length = [if (mins >= 60) '${mins ~/ 60}h', if (mins % 60 != 0 || mins < 60) '${mins % 60}m'].join(' ');
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(
+          e.title,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: kInk),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _Detail(Icons.event_outlined, 'Date', '${_weekdays[e.start.weekday % 7]}, ${e.start.day} ${_months[e.start.month - 1]} ${e.start.year}'),
+              _Detail(Icons.schedule, 'Time', '${hm(e.start)} – ${hm(e.end)} ($length)'),
+              if (e.note.isNotEmpty) _Detail(Icons.notes, 'Details', e.note),
+              if (e.room.isNotEmpty) _Detail(Icons.location_on_outlined, 'Location', e.room),
+              if (e.person.isNotEmpty) _Detail(Icons.person_outline, 'Person', e.person),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              onDelete();
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              onEdit();
+            },
+            child: const Text('Edit'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: kOrange),
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Detail extends StatelessWidget {
+  const _Detail(this.icon, this.label, this.value);
+  final IconData icon;
+  final String label, value;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 14),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CircleAvatar(
+          radius: 18,
+          backgroundColor: kGrey,
+          child: Icon(icon, size: 20, color: kOrange),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, style: const TextStyle(fontSize: 12, color: kMuted)),
+              Text(value, style: const TextStyle(fontSize: 16, color: kInk)),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _Line extends StatelessWidget {
@@ -474,11 +630,15 @@ class _Line extends StatelessWidget {
   final Color color;
 
   @override
-  Widget build(BuildContext context) => Row(children: [
-        SizedBox(width: 18, child: leading),
-        const SizedBox(width: 8),
-        Expanded(child: Text(text, style: TextStyle(fontSize: 14, color: color))),
-      ]);
+  Widget build(BuildContext context) => Row(
+    children: [
+      SizedBox(width: 18, child: leading),
+      const SizedBox(width: 8),
+      Expanded(
+        child: Text(text, style: TextStyle(fontSize: 14, color: color)),
+      ),
+    ],
+  );
 }
 
 class EventForm extends StatefulWidget {
@@ -536,55 +696,66 @@ class _EventFormState extends State<EventForm> {
     } else if (!end.isAfter(start)) {
       setState(() => error = 'End time must be after start time');
     } else {
-      Navigator.pop(
-        context,
-        Event(id: widget.event?.id, title: title.text.trim(), note: note.text.trim(), room: room.text.trim(), person: person.text.trim(), start: start, end: end),
-      );
+      Navigator.pop(context, Event(id: widget.event?.id, title: title.text.trim(), note: note.text.trim(), room: room.text.trim(), person: person.text.trim(), start: start, end: end));
     }
   }
 
   Widget field(TextEditingController c, String label) => Padding(
-        padding: const EdgeInsets.only(top: 12),
-        child: TextField(
-          controller: c,
-          textCapitalization: TextCapitalization.sentences,
-          decoration: InputDecoration(
-            labelText: label,
-            filled: true,
-            fillColor: kGrey,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
-          ),
-        ),
-      );
+    padding: const EdgeInsets.only(top: 12),
+    child: TextField(
+      controller: c,
+      textCapitalization: TextCapitalization.sentences,
+      decoration: InputDecoration(
+        labelText: label,
+        filled: true,
+        fillColor: kGrey,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: EdgeInsets.fromLTRB(24, 0, 24, MediaQuery.viewInsetsOf(context).bottom + 24),
-        child: SingleChildScrollView(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-            Text(widget.event == null ? 'New event' : 'Edit event', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            field(title, 'Title'),
-            field(note, 'Details (e.g. Chapter 1)'),
-            field(room, 'Room / location'),
-            field(person, 'Person'),
-            const SizedBox(height: 12),
-            Wrap(spacing: 8, children: [
+    padding: EdgeInsets.fromLTRB(24, 0, 24, MediaQuery.viewInsetsOf(context).bottom + 24),
+    child: SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(widget.event == null ? 'New event' : 'Edit event', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          field(title, 'Title'),
+          field(note, 'Details (e.g. Chapter 1)'),
+          field(room, 'Room / location'),
+          field(person, 'Person'),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            children: [
               ActionChip(avatar: const Icon(Icons.event, size: 18), label: Text('${start.day} ${_months[start.month - 1]} ${start.year}'), onPressed: pickDate),
               ActionChip(avatar: const Icon(Icons.schedule, size: 18), label: Text('From ${hm(start)}'), onPressed: () => pickTime(true)),
               ActionChip(avatar: const Icon(Icons.schedule, size: 18), label: Text('To ${hm(end)}'), onPressed: () => pickTime(false)),
-            ]),
-            if (error != null) Padding(padding: const EdgeInsets.only(top: 8), child: Text(error!, style: const TextStyle(color: Colors.red))),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: FilledButton(
-                style: FilledButton.styleFrom(backgroundColor: kOrange, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
-                onPressed: submit,
-                child: const Text('Save', style: TextStyle(fontSize: 16)),
-              ),
+            ],
+          ),
+          if (error != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(error!, style: const TextStyle(color: Colors.red)),
             ),
-          ]),
-        ),
-      );
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: kOrange,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+              onPressed: submit,
+              child: const Text('Save', style: TextStyle(fontSize: 16)),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }

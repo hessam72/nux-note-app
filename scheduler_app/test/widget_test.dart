@@ -29,6 +29,17 @@ void main() {
     expect(find.text('09:00'), findsOneWidget);
     expect(find.text('Julie Watson'), findsOneWidget);
 
+    await tester.tap(find.text('Biology'));
+    await tester.pumpAndSettle();
+    final dialog = find.byType(AlertDialog);
+    expect(dialog, findsOneWidget);
+    for (final text in ['Chapter 3: Animal Kingdom', 'Room 2-168', 'Julie Watson', '09:00 – 10:00 (1h)']) {
+      expect(find.descendant(of: dialog, matching: find.text(text)), findsOneWidget);
+    }
+    await tester.tap(find.text('Close'));
+    await tester.pumpAndSettle();
+    expect(dialog, findsNothing);
+
     await tester.tap(find.byIcon(Icons.home_outlined));
     await tester.pumpAndSettle();
     expect(find.text('Biology'), findsWidgets);
