@@ -5,9 +5,10 @@ The whole UI is Persian / right-to-left.
 
 ## Install
 
-The pre-built APK is in `release/`:
+Pre-built APKs are in `release/`:
 
-- `nux-app.apk` — universal build (works on all phones, ~20 MB)
+- `nux-app-arm64-v8a.apk` — almost all modern phones (~18 MB)
+- `nux-app-armeabi-v7a.apk` — older 32-bit phones (~15 MB)
 
 It is signed with the Flutter debug key, so Android may ask you to allow installs from unknown sources.
 
@@ -57,7 +58,7 @@ three `asset:` paths under `fonts:` in `pubspec.yaml`. Nothing else changes.
 ```bash
 flutter pub get
 flutter test
-flutter build apk --release
+flutter build apk --release --split-per-abi
 ```
 
 Compare the screens with the design mock-ups (writes PNGs to `build/screenshots/`, 390×844 @2x):
