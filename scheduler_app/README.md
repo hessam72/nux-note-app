@@ -19,3 +19,22 @@ flutter pub get
 flutter test
 flutter build apk --release --split-per-abi
 ```
+
+## iOS (requires a Mac with Xcode)
+
+The `ios/` project is included. It has not been built or tested on iOS yet, because it was generated on Linux.
+
+```bash
+cd scheduler_app
+flutter pub get
+open -a Simulator
+flutter run
+```
+
+- **Simulator:** no Apple account needed.
+- **Your own iPhone:** open `ios/Runner.xcworkspace` in Xcode, select the Runner target, go to
+  Signing & Capabilities and pick your Team (a free Apple ID works). If Xcode reports the bundle ID is taken,
+  change `com.nux.nuxScheduler` to something unique. Then run `flutter run` with the phone connected.
+  Free-account installs expire after 7 days.
+- **TestFlight / App Store / sharing with others:** needs the paid Apple Developer Program ($99/year).
+  Build with `flutter build ipa`.
