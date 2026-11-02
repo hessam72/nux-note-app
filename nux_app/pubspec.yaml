@@ -1,0 +1,40 @@
+name: nux_app
+description: "Nux learning app: phone login, OTP verification and home."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  flutter_svg: ^2.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/svg/
+    - assets/images/
+
+  fonts:
+    # Swap these three files for IranYekanX FaNum (same file names, or edit the
+    # paths below) to use the font from the Figma design system.
+    - family: AppFont
+      fonts:
+        - asset: assets/fonts/Vazirmatn-FD-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Vazirmatn-FD-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Vazirmatn-FD-Bold.ttf
+          weight: 700
